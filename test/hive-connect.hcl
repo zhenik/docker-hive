@@ -5,6 +5,13 @@ job "hive" {
   group "server" {
     count = 1
 
+    restart {
+      interval = "30m"
+      attempts = 10
+      delay    = "15s"
+      mode     = "fail"
+    }
+
     update {
       max_parallel      = 1
       health_check      = "checks"
@@ -151,7 +158,12 @@ job "hive" {
 
   group "metastore" {
     count = 1
-
+    restart {
+      interval = "30m"
+      attempts = 10
+      delay    = "15s"
+      mode     = "fail"
+    }
     update {
       max_parallel      = 1
       health_check      = "checks"
@@ -301,7 +313,12 @@ job "hive" {
 
   group "database" {
     count = 1
-
+    restart {
+      interval = "30m"
+      attempts = 10
+      delay    = "15s"
+      mode     = "fail"
+    }
     update {
       max_parallel      = 1
       health_check      = "checks"
