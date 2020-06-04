@@ -9,10 +9,10 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 4646, host: 4646, host_ip: "127.0.0.1"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = 11000
+    vb.memory = 4096
     vb.cpus = 2
   end
-  config.vm.provision "ansible" do |ansible|
+  config.vm.provision "ansible_local" do |ansible|
       ansible.playbook = "./test/setup_jobs.yml"
   end
 
