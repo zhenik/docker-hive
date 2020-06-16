@@ -1,0 +1,52 @@
+# Stop daemons
+- name: "Stop nomad"
+  systemd:
+    state: stopped
+    name: nomad
+- name: "Stop consul"
+  systemd:
+    state: stopped
+    name: consul
+
+# Enable ACL
+- name: Consul - change default policy
+  lineinfile:
+    path: /etc/consul.d/config.hcl
+    regexp: '^(.*)default_policy = "allow"'
+    line: 'default_policy = "deny"'
+    backrefs: yes
+    owner: root
+    group: root
+    mode: '0644'
+- name: Nomad - enable acl
+  lineinfile:
+    path: /etc/nomad.d/config.hcl
+    line: 'acl {
+             enabled = true
+             token_ttl = "30s"
+             policy_ttl = "60s"
+           }'
+- name: Nomad - enable acl
+  blockinfile:
+    path: /etc/nomad.d/config.hcl
+    block: |
+      acl {
+         enabled = true
+         token_ttl = "30s"
+         policy_ttl = "60s"
+       }
+# Start daemons
+- name: "Start consul"
+  systemd:
+    state: started
+    name: consul
+- name: "Start nomad"
+  systemd:
+    state: started
+    name: nomad
+
+# Nomad token
+#- name: Bootstrap nomad token
+#  command: nomad acl bootstrap
+#  register: outputfile
+#- debug: msg="{{ outputfile }}"
