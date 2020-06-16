@@ -26,15 +26,10 @@
              token_ttl = "30s"
              policy_ttl = "60s"
            }'
-- name: Nomad - enable acl
-  blockinfile:
-    path: /etc/nomad.d/config.hcl
-    block: |
-      acl {
-         enabled = true
-         token_ttl = "30s"
-         policy_ttl = "60s"
-       }
+    owner: root
+    group: root
+    mode: '0644'
+
 # Start daemons
 - name: "Start consul"
   systemd:
@@ -44,9 +39,18 @@
   systemd:
     state: started
     name: nomad
+- name: "wait for nomad to come up"
+  uri:
+    url: "http://127.0.0.1:4646"
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 3
 
 # Nomad token
-#- name: Bootstrap nomad token
-#  command: nomad acl bootstrap
-#  register: outputfile
-#- debug: msg="{{ outputfile }}"
+- name: Bootstrap nomad token
+  command: nomad acl bootstrap
+  register: fileoutput
+
+- debug: msg="{{ fileoutput }}"
